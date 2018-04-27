@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  server:
+      build: "./server/."
+      ports:
+          - "8080:8000"
+      depends_on:
+          - database
+      #entrypoint: "./wait-for-it.sh db:5432"
+
+  database:
+      build: "./database/."
