@@ -7,7 +7,7 @@ services:
           - "8080:8000"
       depends_on:
           - database
-      #entrypoint: "./wait-for-it.sh db:5432"
+      entrypoint: "./wait-for-it.sh database:5432"
 
   database:
       build: "./database/."
