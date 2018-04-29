@@ -4,10 +4,10 @@ services:
   server:
       build: "./server/."
       ports:
-          - "8080:8000"
+          - "8080:8080"
       depends_on:
-          - database
-      entrypoint: "./wait-for-it.sh database:5432"
+          - database          
+      command: sh -c './wait-for.sh database:5432 -t 3 '
 
   database:
       build: "./database/."
