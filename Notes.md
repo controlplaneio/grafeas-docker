@@ -22,7 +22,17 @@ Docker propose a number of best practices to achieve this [here](https://docs.do
 
 ### Parsing the Hostname and Port from the Config File
 
+The database server details are configured in the Grafeas configuration file called 'config.yaml' and the following piece of shell script yanks out the server name and port number:
+
 > grep -Eo "host:\s*\"(.+:[0-9]+)\"" config.yaml | cut -d \" -f2
+
+### The 'start.sh' Script
+
+This simple script performs the following actions:
+
+1. Retrieves the server name and port number from the 'config.yaml' file.
+2. Uses the 'wait-for.sh' script to check if the server at the specified location is accepting connections.
+3. If it is then runs the Grafeas server. 
 
 ## Building the Grafeas Server Executable
 
