@@ -7,7 +7,8 @@ services:
           - "8080:8080"
       depends_on:
           - database          
-      command: sh -c './wait-for.sh database:5432 -t 3 '
 
   database:
       build: "./database/."
+      environment:
+        - POSTGRES_PASSWORD=7b1pGaZAwknlblLp

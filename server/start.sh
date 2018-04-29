@@ -1,6 +1,6 @@
 #!/bin/sh
 
-timeout=3  # Timeout to wait for the database server to come up, in seconds
+timeout=10  # Timeout to wait for the database server to come up, in seconds
 debug=true
 
 echoerr() {
@@ -22,14 +22,11 @@ trace "Database server= $server"
 # Run the wait-for.sh script to check the port is alive, waiting up to 30 seconds
 $(./wait-for.sh $server -t $timeout)
 rc=$?
-
-if [ $debug = true ] ; then 
-    trace "RC= $rc" 
-fi
+trace "RC= $rc" 
 
 if [ $rc -eq 0 ] ; then
     # Database server is responding so start up Grafeas 
-    true
+    $(./grafeas-server --config config.yaml)
 else
     echoerr "Database server has not responded, exiting in error"
     exit 1
