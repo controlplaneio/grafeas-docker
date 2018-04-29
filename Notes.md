@@ -32,8 +32,12 @@ This simple script performs the following actions:
 
 1. Retrieves the server name and port number from the 'config.yaml' file.
 2. Uses the 'wait-for.sh' script to check if the server at the specified location is accepting connections.
-3. If it is then runs the Grafeas server. 
+3. If it is then runs the Grafeas server.
 
 ## Building the Grafeas Server Executable
 
-The Grafeas server is a [GoLang](https://golang.org/) executable build from the [Grafeas repository](https://github.com/grafeas/grafeas).
+The Grafeas server is a [GoLang](https://golang.org/) executable build from the [Grafeas repository](https://github.com/grafeas/grafeas). 
+
+I didn't want to have a dependency on building the full Grafeas project to be able to deploy a server so I took a bit of a shortcut/hack and simply used the existing [Dockerfile](https://github.com/grafeas/grafeas/blob/master/Dockerfile) from with the Grafeas repo to build me a working version of the Grafeas server and then I just used ```docker cp ...``` to extract the built binary file. 
+
+If you want to use a more up to date version of Grafeas you will need to clone the Grafeas repo, build the Dockerfile, and copy the server file yourself and replace the [one](https://github.com/createk-design/grafeas-docker/blob/master/server/grafeas-server) in this repository.

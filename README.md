@@ -10,6 +10,13 @@ You will require a current version of Docker and Docker Compose, and a means to 
 
 ### Installing
 
+Clone the repository and from within the root directory execute:
+
+* ```docker build```
+* ```docker up```
+
+The Grafeas server will now be exposed on ['localhost:8080'](localhost:8080).
+
 ## Built With
 
 This software was built and tested on MacOS High Sierra using:
