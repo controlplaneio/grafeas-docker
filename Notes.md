@@ -1,0 +1,29 @@
+# Design Notes for Grafeas Docker Compose
+
+This is simple Docker Compose project to run Grafeas with a Postgres server.
+
+# Postgres SQL Server
+
+The Postgres SQL server Docker image is built from a standard Postgres 10.3 distribution with the following steps added:
+
+1. An initialisation script is provided in the standard location for the Postgres Docker as per the installation guide [here](https://hub.docker.com/_/postgres/).
+2. The default port 5492 is exposed in the container.
+3. When executing the image it is necessary to provide a value for the 'admin' password for Postgres, namely for the account 'postgres' which is the default admin account. This is done by providing an environment variable POSTGRES_PASSWORD via the Compose file.
+
+# Grafeas Server
+
+The Grafeas server is a recent Alpine base image executing a special prebuilt version of the Grafeas server (a [GoLang](https://golang.org/) binary executable).
+
+## Ensuring the Postgres Server is Running Before Starting Grafeas
+
+Since the Grafeas server and the Postgres server are executed from the same Docker Compose file it is important that the database server is running and accepting connections before the Grafeas server attempts to connect since there is no retry logic in the Grafeas server.
+
+Docker propose a number of best practices to achieve this [here](https://docs.docker.com/compose/startup-order/) and this project utilises the SH sell compatible ['wait-for'](https://github.com/eficode/wait-for) script.
+
+### Parsing the Hostname and Port from the Config File
+
+> grep -Eo "host:\s*\"(.+:[0-9]+)\"" config.yaml | cut -d \" -f2
+
+## Building the Grafeas Server Executable
+
+The Grafeas server is a [GoLang](https://golang.org/) executable build from the [Grafeas repository](https://github.com/grafeas/grafeas).
