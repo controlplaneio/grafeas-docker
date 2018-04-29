@@ -1,7 +1,7 @@
 #!/bin/sh
 
 TIMEOUT=15
-QUIET=0
+QUIET=1
 
 echoerr() {
   if [ "$QUIET" -ne 1 ]; then printf "%s\n" "$*" 1>&2; fi
@@ -32,7 +32,7 @@ wait_for() {
     fi
     sleep 1
   done
-  echo "Operation timed out" >&2
+  echoerr "Operation timed out" >&2
   exit 1
 }
 
