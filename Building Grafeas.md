@@ -93,3 +93,4 @@ This code doesn't appear to be used anywhere.
 
 ## Building the Dockerfile
 
+The easiest way to just get Grafeas running is to use the [Dockerfile](https://github.com/grafeas/grafeas/blob/master/Dockerfile) in the Grafeas repo which will build Grafeas, and execute it using memory store and binding to local port 8080.
