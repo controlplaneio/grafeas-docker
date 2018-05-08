@@ -2,13 +2,16 @@ version: '3'
 
 services:
   server:
-      build: "./server/."
-      ports:
-          - "8080:8080"
-      depends_on:
-          - database          
+    build: "./server/."
+    ports:
+        - "8080:8080"
+    depends_on:
+        - database     
+    environment:
+        - GRAFEAS_PASSWORD=9Ptd5EQZFLoufuIby        
 
   database:
-      build: "./database/."
-      environment:
+    build: "./database/."
+    environment:
         - POSTGRES_PASSWORD=7b1pGaZAwknlblLp
+        - GRAFEAS_PASSWORD=9Ptd5EQZFLoufuIby

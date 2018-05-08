@@ -3,7 +3,7 @@
 timeout=10  # Timeout to wait for the database server to come up, in seconds
 debug=true
 config_file="config.yaml"
-grafeas_password_file="/Users/colind/.grafeas_password"
+grafeas_password_file="/.grafeas_password"
 
 echoerr() {
     printf "* %s *\n" "$*" 1>&2; 
@@ -15,16 +15,33 @@ trace() {
     fi
 }
 
-# PSWD=`cat ~/.grafeas_password`
-# sed "s/password:.*\".*\"/PASSWORD: \"$PSWD\" /" config.yaml
-# sed -i .bak "s/password:.*\".*\"/PASSWORD: \"$PSWD\"/" config.yaml
-
 trace 'Running start.sh'
 
+password=''
+
 # Get the password from the Grafeas password file
-password=`cat $grafeas_password_file`
-sed -i .bak "s/password:.*\".*\"/password: \"$password\"/" $config_file
-trace "Password= $password"
+if [ -f $grafeas_password_file ]
+then
+    password=`cat $grafeas_password_file`
+fi
+
+# Pull the environment variable 
+env_password=`printenv GRAFEAS_PASSWORD`
+
+# Sample the environment variable
+if [ ! -z "$env_password" ]
+then
+    password=$env_password
+fi
+
+# If we got a blank password then exit without further ado
+if [ -z "$password" ]
+then 
+    echoerr "Failed to ingest a database password"
+    exit 1
+fi
+
+sed -i "s/password:.*\".*\"/password: \"$password\"/" $config_file
 
 # Get the hostname and port from the config file, checking if the file exists first
 if [ -f $config_file ] 
