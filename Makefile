@@ -15,7 +15,7 @@ NETWORK_NAME := "grafeas"
 POSTGRES_IMAGE := "grafeas-database"
 SERVER_IMAGE  := "grafeas-server"
 
-ifeq (${NODAEMON}, true)
+ifeq ($(NODAEMON), true)
 	RUN_MODE := 
 else
 	RUN_MODE := "-d"
@@ -36,6 +36,38 @@ build: ## builds a docker image
 run-prod-network: ## create bridge network shared b/w grafeas & postgres
 	@echo "+ $@"
 	docker network create ${NETWORK_NAME} || true
+
+# define db-init-script
+ 	# set 
+	# 123
+	# ggg
+# endef
+
+define nwln
+
+endef
+
+define ANNOUNCE_BODY
+Version of has been released.
+
+It can be downloaded from here.
+
+etc, etc.
+endef
+
+PASSWORD := 9Ptd5EQZFLoufuIby
+
+.PHONY: generate-db-init-script
+generate-db-init-script:
+	@printf \
+	"#!/bin/bash\n\
+	set -e\n\n\
+	psql -v ON_ERROR_STOP=1 --username \"$$"POSTGRES_USER"\" <<-EOSQL\n\
+		CREATE USER grafeas WITH LOGIN PASSWORD '$(PASSWORD)';\n\
+		CREATE DATABASE grafeas;\n\
+		GRANT ALL PRIVILEGES ON DATABASE grafeas TO grafeas;\n\
+	EOSQL\n\
+	" > "init-grafeas-db.sh"
 
 define pre-run
 	@echo "+ pre-run"
@@ -58,6 +90,7 @@ define run-postgres
 		--restart always \
 		--name postgres \
 		--network ${NETWORK_NAME} \
+		-v "init-grafeas-db.sh":"/docker-entrypoint-initdb.d/init-grafeas-db.sh" \
 		-e GRAFEAS_PASSWORD=9Ptd5EQZFLoufuIby \
 		-e POSTGRES_PASSWORD=7b1pGaZAwknlblLp \
 		"${POSTGRES_IMAGE}"
