@@ -29,7 +29,7 @@ grafeas:
   # Postgres options
   postgres:
     # Database host
-    host: "database:5432"
+    host: "postgres:5432"
     # Dabase name
     dbname: "grafeas"
     # Database username
