@@ -12,7 +12,7 @@ CONTAINER_NAME_LATEST := $(REGISTRY)/$(NAME):latest
 NETWORK_NAME := "grafeas"
 
 #POSTGRES_IMAGE := "postgres:10.3-alpine"
-POSTGRES_IMAGE := "grafeas-database"
+POSTGRES_IMAGE := "postgres:10.3-alpine"
 SERVER_IMAGE  := "grafeas-server"
 
 ifeq ($(NODAEMON), true)
@@ -56,6 +56,7 @@ etc, etc.
 endef
 
 PASSWORD := 9Ptd5EQZFLoufuIby
+SCRIPT_FILENAME := "init-grafeas-db.sh"
 
 .PHONY: generate-db-init-script
 generate-db-init-script:
@@ -67,7 +68,9 @@ generate-db-init-script:
 		CREATE DATABASE grafeas;\n\
 		GRANT ALL PRIVILEGES ON DATABASE grafeas TO grafeas;\n\
 	EOSQL\n\
-	" > "init-grafeas-db.sh"
+	" > $(SCRIPT_FILENAME)
+
+	chmod a+x $(SCRIPT_FILENAME)
 
 define pre-run
 	@echo "+ pre-run"
@@ -81,6 +84,8 @@ endef
 run: ## runs the last build docker image
 	@echo "+ $@"
 
+	@echo ${shell pwd}
+
 	$(pre-run)
 	$(run-postgres)
 	$(run-server)
@@ -90,7 +95,7 @@ define run-postgres
 		--restart always \
 		--name postgres \
 		--network ${NETWORK_NAME} \
-		-v "init-grafeas-db.sh":"/docker-entrypoint-initdb.d/init-grafeas-db.sh" \
+		-v "${shell pwd}/init-grafeas-db.sh":"/docker-entrypoint-initdb.d/init-grafeas-db.sh" \
 		-e GRAFEAS_PASSWORD=9Ptd5EQZFLoufuIby \
 		-e POSTGRES_PASSWORD=7b1pGaZAwknlblLp \
 		"${POSTGRES_IMAGE}"
@@ -100,6 +105,7 @@ define run-server
 	docker container run ${RUN_MODE} \
 		--restart always \
 		--name grafeas \
+		-p 8080:8080 \
 		--network ${NETWORK_NAME} \
 		-e GRAFEAS_PASSWORD=9Ptd5EQZFLoufuIby \
 		"${SERVER_IMAGE}"

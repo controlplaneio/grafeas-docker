@@ -1,1 +1,3 @@
-server/config.yaml.bak
+server/*.bak
+examples/.idea/*
+
