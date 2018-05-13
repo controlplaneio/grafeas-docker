@@ -10,11 +10,14 @@ import (
 	pb "github.com/grafeas/grafeas/v1alpha1/proto"
 	"io/ioutil"
 	"encoding/json"
+	"strings"
 )
 
 const baseURL = "http://localhost:8080/v1alpha1"
 
-func getProjects() []string {
+func getProjects() ([]string, error) {
+	// Simple stuff here - use the raw URL to count the number of projects on the server
+
 	type Projects struct {
 		Project string		`json:"name"`
 	}
@@ -30,7 +33,6 @@ func getProjects() []string {
 	rs, err := http.Get(baseURL + "/projects")
 
 	if err == nil {
-
 		body, err := ioutil.ReadAll(rs.Body)
 
 		if err != nil {
@@ -51,11 +53,36 @@ func getProjects() []string {
 		}
 
 		// Return the strings
-		return projects
+		return projects, nil
 	}
 
-	return []string{}
+	// Return an empty array
+	return []string{}, err
 }
+
+func createProjects(projects []string) (error){
+
+	for _, project := range projects {
+
+			payload := strings.NewReader(fmt.Sprintf("{\"name\":\"projects/%s\"}", project))
+			req, _ := http.NewRequest("POST", baseURL + "/projects", payload)
+
+			req.Header.Add("Accept", "application/json")
+			req.Header.Add("Content-type", "application/json")
+			req.Header.Add("Cache-Control", "no-cache")
+
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				return err
+
+			res.Body.Close()
+		}
+	}
+
+	return nil
+}
+
+var ProjectNames = []string{"project_one", "project_two", "project_three", "project_four", "project_five"}
 
 
 func main() {
@@ -63,21 +90,27 @@ func main() {
 	defer conn.Close()
 	client := pb.NewGrafeasClient(conn)
 
-	projects := getProjects()
+	// Check what projects we have on the server
+	projects, err := getProjects()
 
+	// Did we get any ?
 	if len(projects) == 0 {
 
-		fmt.Printf("<< NO PROJECTS >>")
+		fmt.Printf("> No projects found so creating some default ones")
+
+		err = createProjects(ProjectNames)
+
+		// TODO : Check here for an error - if we got one exit
+		if err != nil {
+			panic(err)
+		}
 
 	}
 
-
-
-	// TODO: Get a list of the projects
 	my_get_note_request := pb.GetNoteRequest{}
-	my_get_note_request.Name = "projects/project_one"
+	my_get_note_request.Name = "projects/project_one/notes/note_two"
 
-	_, err = client.GetNote(context.Background(), &my_get_note_request)
+	this_note, err := client.GetNote(context.Background(), &my_get_note_request)
 
 	if err != nil {
 		log.Fatalf("Error getting note request %v", err)
@@ -85,9 +118,12 @@ func main() {
 		log.Printf("Succesfully got note request")
 	}
 
+	fmt.Printf(this_note.Name)
+
 	my_note_request := pb.CreateNoteRequest{}
 	my_note := pb.Note{}
-	my_note.Name = "projects/project_one/notes/note_one"
+	my_note.Name = "projects/project_one/notes/note_two"
+	my_note.LongDescription = "This is a very long description of the first note in the first project"
 	my_note_request.Note = &my_note
 
 	_, err = client.CreateNote(context.Background(), &my_note_request)
