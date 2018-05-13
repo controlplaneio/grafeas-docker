@@ -2,19 +2,88 @@ package main
 
 import (
 	"context"
-	//"log"
-
-	pb "github.com/grafeas/grafeas/v1alpha1/proto"
+	"net/http"
 	"google.golang.org/grpc"
+	"log"
 	"github.com/grafeas/client-go/v1alpha1"
 	"fmt"
-	"log"
+	pb "github.com/grafeas/grafeas/v1alpha1/proto"
+	"io/ioutil"
+	"encoding/json"
 )
+
+const baseURL = "http://localhost:8080/v1alpha1"
+
+func getProjects() []string {
+	type Projects struct {
+		Project string		`json:"name"`
+	}
+
+	type ProjectResponse struct {
+		Projects []Projects	`json:"projects"`
+		Token string     	`json:"nextPageToken"`
+	}
+
+	var projectResponse ProjectResponse
+	projects := []string{}
+
+	rs, err := http.Get(baseURL + "/projects")
+
+	if err == nil {
+
+		body, err := ioutil.ReadAll(rs.Body)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		if err == nil {
+				err = json.Unmarshal(body, &projectResponse)
+
+				if err != nil {
+					panic(err.Error())
+			}
+		}
+
+		// Convert to an array of strings, there must be an easier way to do this ...
+		for _, p := range projectResponse.Projects {
+			projects = append(projects, p.Project)
+		}
+
+		// Return the strings
+		return projects
+	}
+
+	return []string{}
+}
+
 
 func main() {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
 	defer conn.Close()
 	client := pb.NewGrafeasClient(conn)
+
+	projects := getProjects()
+
+	if len(projects) == 0 {
+
+		fmt.Printf("<< NO PROJECTS >>")
+
+	}
+
+
+
+	// TODO: Get a list of the projects
+	my_get_note_request := pb.GetNoteRequest{}
+	my_get_note_request.Name = "projects/project_one"
+
+	_, err = client.GetNote(context.Background(), &my_get_note_request)
+
+	if err != nil {
+		log.Fatalf("Error getting note request %v", err)
+	} else {
+		log.Printf("Succesfully got note request")
+	}
 
 	my_note_request := pb.CreateNoteRequest{}
 	my_note := pb.Note{}
@@ -170,7 +239,7 @@ func Occurrence(noteName string, occurrenceName string) *v1alpha1.Occurrence {
 			Severity:  "HIGH",
 			CvssScore: 7.5,
 			PackageIssue: []v1alpha1.PackageIssue{
-				v1alpha1.PackageIssue{
+				{
 					SeverityName: "HIGH",
 					AffectedLocation: v1alpha1.VulnerabilityLocation{
 						CpeUri:   "cpe:/o:debian:debian_linux:8",
