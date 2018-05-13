@@ -17,11 +17,11 @@ try:
 
     # Create a note in this format
     # format: = fmt.Sprintf("%s/{project_id}/%s/{entity_id}", projectKeyword, resourceKeyword)
-    note = swagger_client.Note(name='projects/project_one/notes/note_one')  # Note | The Note to be inserted (optional)
+    # note = swagger_client.Note(name='projects/project_one/notes/note_one')  # Note | The Note to be inserted (optional)
 
-    api_response = api_instance.create_note('project_one', note_id='note_one', note=note)
+    # api_response = api_instance.create_note('project_one', note_id='note_one', note=note)
 
-    api_response = api_instance.list_notes('project_one')
+    api_response = api_instance.list_notes('best-vuln-scanner')
 
     pprint(api_response)
 

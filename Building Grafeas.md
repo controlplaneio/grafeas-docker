@@ -22,7 +22,7 @@ There is an unstated dependency on having a binary executable of the [Google Pro
 
 I shamefully admit being a complete 'noob' to [GoLang](https://golang.org/) and I had a particular painful experience trying to get projects to build correct due to unmet dependencies resulting from an GOPATH variable not being set correctly, and the use of 'github.com' prefixed package names in the Grafeas repository.
 
-I'd suggest an newcomer to GoLang read [this](https://golang.org/doc/code.html) to save many hours of frustration. 
+I'd suggest an newcomer to GoLang read [this](https://golang.org/doc/code.html) to save many hours of frustration.
 
 What I found to work well was set GOPATH to '/home/colind/go' and then to allow GoLang to simply do its magic and install everything in the default locations, rather than having to re-write the 'github.com' prefixed package paths. The end result is that everything you ever do with GoLang ends up in this home folder but on the plus side you remain sane. I found doing a Git checkout of the Grafeas repo into the 'github.com' folder worked well leaving me with the following directory structure:
 

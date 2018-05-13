@@ -1,4 +1,3 @@
 server/*.bak
 examples/.idea/
-
-
+examples/golang/.idea/

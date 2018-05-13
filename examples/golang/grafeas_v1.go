@@ -1,60 +1,66 @@
+// Copyright 2017 The Grafeas Authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
-	"context"
-	//"log"
-
-	pb "github.com/grafeas/grafeas/v1alpha1/proto"
-	"google.golang.org/grpc"
-	"github.com/grafeas/client-go/v1alpha1"
 	"fmt"
+	"github.com/grafeas/client-go/v1alpha1"
+	"github.com/grafeas/grafeas/samples/server/go-server/api/server/name"
 	"log"
 )
 
 func main() {
-	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
-	defer conn.Close()
-	client := pb.NewGrafeasClient(conn)
-
-	my_note_request := pb.CreateNoteRequest{}
-	my_note := pb.Note{}
-	my_note.Name = "projects/project_one/notes/note_one"
-	my_note_request.Note = &my_note
-
-	_, err = client.CreateNote(context.Background(), &my_note_request)
-
+	client := v1alpha1.NewGrafeasApi()
+	nPID := "best-vuln-scanner"
+	nID := "CVE-2014-9911"
+	n := note(nPID, nID)
+	createdN, _, err := client.CreateNote(nPID, nID, *n)
 	if err != nil {
 		log.Fatalf("Error creating note %v", err)
 	} else {
-		log.Printf("Succesfully created note")
+		log.Printf("Succesfully created note: %v", createdN)
 	}
 
-	//nPID := "best-vuln-scanner"
-	//nID := "CVE-2014-9911"
-	//n := note(nPID, nID)
-	//createdN, err := client.CreateNote(context.Background(), nPID, nID, *n)
-	//if err != nil {
-	//	log.Fatalf("Error creating note %v", err)
-	//} else {
-	//	log.Printf("Succesfully created note: %v", createdN)
-	//}
+	if got, _, err := client.GetNote(nPID, nID); err != nil {
+		log.Fatalf("Error getting note %v", err)
 
-	// List notes
-	//resp, err := client.ListNotes(context.Background(),
-	//	&pb.ListNotesRequest{
-	//		Parent: "projects/myproject",
-	//	})
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	} else {
+		log.Printf("Succesfully got note: %v", got)
+	}
 
-	//if len(resp.Notes) != 0 {
-	//	log.Println(resp.Notes)
-	//} else {
-	//	log.Println("Project does not contain any notes")
-	//}
+	oPID := "scanning-customer"
+	//o := Occurrence(createdN.Name)
+	o := Occurrence(createdN.Name, fmt.Sprintf("projects/%v/occurrences/%v", nPID, oPID))
+	createdO, _, err := client.CreateOccurrence(oPID, *o)
+	if err != nil {
+		log.Fatalf("Error creating occurrence %v", err)
+	} else {
+		log.Printf("Succesfully created occurrence: %v", createdO)
+	}
+
+	_, oID, pErr := name.ParseOccurrence(createdO.Name)
+	if pErr != nil {
+		log.Fatalf("Unable to get occurenceId from occurrence name %v: %v", createdO.Name, pErr)
+	}
+	if got, _, err := client.GetOccurrence(nPID, oID); err != nil {
+		log.Printf("Error getting occurrence %v", err)
+	} else {
+		log.Printf("Succesfully got occurrence: %v", got)
+	}
+
 }
-
 
 func note(pID, nID string) *v1alpha1.Note {
 	return &v1alpha1.Note{

@@ -4,6 +4,11 @@ This is a Docker Compose project to provide a self contained instance of Google'
 
 ## Getting Started
 
+### TODO
+
+* Two modes of building
+* Create the network interface first
+
 ### Prerequisites
 
 You will require a current version of Docker and Docker Compose, and a means to test the Grafeas server such as their [Python](https://github.com/grafeas/client-python) or [Go](https://github.com/grafeas/client-go) client libraries.
@@ -12,8 +17,8 @@ You will require a current version of Docker and Docker Compose, and a means to 
 
 Clone the repository and from within the root directory execute:
 
-* ```docker build```
-* ```docker up```
+* ```docker-compose build```
+* ```docker-compose up```
 
 The Grafeas server will now be exposed on ['localhost:8080'](localhost:8080).
 

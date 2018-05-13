@@ -37,24 +37,6 @@ run-prod-network: ## create bridge network shared b/w grafeas & postgres
 	@echo "+ $@"
 	docker network create ${NETWORK_NAME} || true
 
-# define db-init-script
- 	# set 
-	# 123
-	# ggg
-# endef
-
-define nwln
-
-endef
-
-define ANNOUNCE_BODY
-Version of has been released.
-
-It can be downloaded from here.
-
-etc, etc.
-endef
-
 PASSWORD := 9Ptd5EQZFLoufuIby
 SCRIPT_FILENAME := "init-grafeas-db.sh"
 
