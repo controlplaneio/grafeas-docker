@@ -176,7 +176,7 @@ func Occurrence(noteName string, occurrenceName string) *v1alpha1.Occurrence {
 			Severity:  "HIGH",
 			CvssScore: 7.5,
 			PackageIssue: []v1alpha1.PackageIssue{
-				v1alpha1.PackageIssue{
+				{
 					SeverityName: "HIGH",
 					AffectedLocation: v1alpha1.VulnerabilityLocation{
 						CpeUri:   "cpe:/o:debian:debian_linux:8",

@@ -84,7 +84,6 @@ func createProjects(projects []string) (error){
 
 var ProjectNames = []string{"project_one", "project_two", "project_three", "project_four", "project_five"}
 
-
 func main() {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
 	defer conn.Close()
@@ -104,7 +103,6 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-
 	}
 
 	my_get_note_request := pb.GetNoteRequest{}
