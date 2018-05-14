@@ -74,9 +74,7 @@ drwxr-xr-x  11 colind  staff   352B Apr 24 12:12 ../
 
 The resultant ```grafeas-server``` executable takes a single parameter, namely a [config file](https://github.com/grafeas/grafeas/blob/master/config.yaml.sample) as follows:
 
-```
-./grafeas-server --config config.yaml
-```
+> ./grafeas-server --config config.yaml
 
 ### Using the Makefile
 
@@ -90,6 +88,25 @@ grafeas_go: v1alpha1/proto/grafeas.pb.go
 ```
 
 This code doesn't appear to be used anywhere.
+
+#### Clashes with Old Versions in the 'vendor' Directory
+
+When I pulled a new version of 'grafeas' and built it I encountered the following error with 'make build':
+
+```
+# make build
+go build -v ./...
+github.com/grafeas/grafeas/vendor/github.com/grpc-ecosystem/grpc-gateway/runtime/internal
+github.com/grafeas/grafeas/vendor/github.com/grpc-ecosystem/grpc-gateway/runtime
+github.com/grafeas/grafeas/v1alpha1/proto
+# github.com/grafeas/grafeas/v1alpha1/proto
+v1alpha1/proto/grafeas.pb.go:462:42: undefined: "github.com/grafeas/grafeas/vendor/github.com/golang/protobuf/proto".InternalMessageInfo
+v1alpha1/proto/grafeas.pb.go:503:39: undefined: "github.com/grafeas/grafeas/vendor/github.com/golang/protobuf/proto".InternalMessageInfo
+v1alpha1/proto/grafeas.pb.go:547:41: undefined: "github.com/grafeas/grafeas/vendor/github.com/golang/protobuf/proto".InternalMessageInfo
+v1alpha1/proto/grafeas.pb.go:602:42: undefined: "github.com/grafeas/grafeas/vendor/github.com/golang/protobuf/proto".InternalMessageInfo
+v1alpha1/proto/grafeas.pb.go:643:42: undefined: "github.com/grafeas/grafeas/vendor/github.com/golang/protobuf/proto".InternalMessageInfo
+```
+I traced this to an old version of Protobuf that had been bundled in the 'vendor' folder of the Grafeas repository. Deleting this version (with ```rm -rf vendor/github.com/golang/protobuf```) and using ```go get github.com/golang/protobuf``` to install the latest version fixed the issue.
 
 ## Building the Dockerfile
 
