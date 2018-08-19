@@ -44,9 +44,9 @@ $ docker-compose up
 
 The Grafeas server will now be exposed on ['localhost:8080'](localhost:8080).
 
-#### Using the Makefile **WIP, broken**
+#### Using the Makefile - \*\*WIP, broken\*\*
 
-_WIP: If you put passwords into the *_PASSWORD* vars in the Makefile, run `make
+_WIP: If you put passwords into the \*PASSWORD\* vars in the Makefile, run `make
 generate-db-init-script` and then `make run` it might work!_
 
 Clone the repository and from within the root directory execute the following
