@@ -1,3 +1,6 @@
 server/*.bak
 examples/.idea/
 examples/golang/.idea/
+.env
+.vscode
+init-grafeas-db.sh

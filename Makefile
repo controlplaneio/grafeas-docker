@@ -37,7 +37,8 @@ run-prod-network: ## create bridge network shared b/w grafeas & postgres
 	@echo "+ $@"
 	docker network create ${NETWORK_NAME} || true
 
-PASSWORD := 9Ptd5EQZFLoufuIby
+POSTGRES_PASSWORD := 
+GRAFEAS_PASSWORD := 
 SCRIPT_FILENAME := "init-grafeas-db.sh"
 
 .PHONY: generate-db-init-script
@@ -46,12 +47,11 @@ generate-db-init-script:
 	"#!/bin/bash\n\
 	set -e\n\n\
 	psql -v ON_ERROR_STOP=1 --username \"$$"POSTGRES_USER"\" <<-EOSQL\n\
-		CREATE USER grafeas WITH LOGIN PASSWORD '$(PASSWORD)';\n\
+		CREATE USER grafeas WITH LOGIN PASSWORD '$(GRAFEAS_PASSWORD)';\n\
 		CREATE DATABASE grafeas;\n\
 		GRANT ALL PRIVILEGES ON DATABASE grafeas TO grafeas;\n\
 	EOSQL\n\
 	" > $(SCRIPT_FILENAME)
-
 	chmod a+x $(SCRIPT_FILENAME)
 
 define pre-run
@@ -78,8 +78,8 @@ define run-postgres
 		--name postgres \
 		--network ${NETWORK_NAME} \
 		-v "${shell pwd}/init-grafeas-db.sh":"/docker-entrypoint-initdb.d/init-grafeas-db.sh" \
-		-e GRAFEAS_PASSWORD=9Ptd5EQZFLoufuIby \
-		-e POSTGRES_PASSWORD=7b1pGaZAwknlblLp \
+		-e GRAFEAS_PASSWORD=${GRAFEAS_PASSWORD} \
+		-e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
 		"${POSTGRES_IMAGE}"
 endef
 
@@ -89,7 +89,7 @@ define run-server
 		--name grafeas \
 		-p 8080:8080 \
 		--network ${NETWORK_NAME} \
-		-e GRAFEAS_PASSWORD=9Ptd5EQZFLoufuIby \
+		-e GRAFEAS_PASSWORD=${GRAFEAS_PASSWORD} \
 		"${SERVER_IMAGE}"
 endef
 
