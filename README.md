@@ -81,7 +81,7 @@ Subsequent modifications were built and tested on **Arch Linux** using:
 ...and used in workshop on CentOS 7 using:
 
 * Docker 17.06.02
-* Docker COmponse 1.11.2
+* Docker Compose 1.11.2
 
 ## Dependencies
 
